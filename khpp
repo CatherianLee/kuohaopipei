@@ -1,0 +1,245 @@
+#include <iostream>
+#include <assert.h>
+#include <cstring>
+
+using namespace std;
+const int increase=20;
+template<class T>
+
+class seqstack
+{
+public:
+    seqstack(int size=50);
+    ~seqstack()
+    {
+        delete []elements;
+    }
+    void push(T &x);
+    bool pop(T &x);
+    bool gettop(T &x);
+    bool isempty()
+    {
+        if(top==-1)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+    bool isfull()
+    {
+        if(top==maxsize-1)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+    int getsize()
+    {
+        return top+1;
+    }
+    void makeempty()
+    {
+        top=-1;
+    }
+private:
+    T *elements;
+    int top;
+    int maxsize;
+    void overflow();
+};
+
+template<class T>
+seqstack<T>::seqstack(int size)
+{
+    top=-1;
+    maxsize=size;
+    elements=new T[maxsize];
+    assert(elements!=NULL);
+}
+
+template<class T>
+void seqstack<T>::overflow()
+{
+    T *newarray=new T[maxsize+increase];
+    if(newarray==NULL)
+    {
+        cerr<<"存储分配失败！"<<endl;
+    }
+    for(int i=0; i<=top; i++)
+    {
+        newarray[i]=elements[i];
+    }
+    maxsize=maxsize+increase;
+    delete []elements;
+    elements=newarray;
+};
+
+template<class T>
+void seqstack<T>::push(T &x)
+{
+    if(isfull()==true)
+    {
+        overflow();
+    }
+    else
+    {
+        elements[++top]=x;
+    }
+};
+
+template<class T>
+bool seqstack<T>::pop(T &x)
+{
+    if(isempty()==true)
+    {
+        return false;
+    }
+    else
+    {
+        x=elements[top--];
+        return true;
+    }
+};
+
+template<class T>
+bool seqstack<T>::gettop(T &x)
+{
+    if(isempty()==true)
+    {
+        return false;
+    }
+    else
+    {
+        x=elements[top];
+    }
+    return true;
+}
+void match(char *m)
+{
+    seqstack<char> s(100);
+    char l;
+    int length=strlen(m);
+    bool match=true;
+    for(int i=0; i<length&&m[i]!='#'; i++)
+        {
+            if(m[i]=='('||m[i]=='{'||m[i]=='[')
+            {
+                s.push(m[i]);
+            }
+            else if(m[i]==')')
+            {
+                if(s.pop(l))
+                {
+                    if(l!='(')
+                    {
+                        match=false;
+                        break;
+                    }
+                }
+                else
+                {
+                    match=false;
+                    break;
+                }
+            }
+            else if(m[i]=='}')
+            {
+                if(s.pop(l))
+                {
+                    if(l!='{')
+                    {
+                        match=false;
+                        break;
+                    }
+                }
+                else
+                {
+                    match=false;
+                    break;
+                }
+            }
+            else if(m[i]==']')
+            {
+               if(s.pop(l))
+                {
+                    if(l!='[')
+                    {
+                        match=false;
+                        break;
+                    }
+                }
+                else
+                {
+                    match=false;
+                    break;
+                }
+            }
+        }
+//    for(int i=1;i<length&&m[i-1]!='#';i++)
+//    {
+//        if(m[i-1]=='(')s.push(m[i-1]);
+//        else if(m[i-1]=='[')s.push(m[i-1]);
+//        else if(m[i-1]=='{')s.push(m[i-1]);
+//        else if(m[i-1]=='}')
+//        {
+//            if(s.pop(l)==false)
+//            {
+//                match=false;
+//                break;
+//            }
+//            else if(l!='{')
+//            {
+//                match=false;
+//                break;
+//            }
+//        }
+//        else if(m[i-1]==']')
+//        {
+//            if(s.pop(l)==false)
+//            {
+//                match=false;
+//                break;
+//            }
+//            else if(l!='[')
+//            {
+//                match=false;
+//                break;
+//            }
+//        }
+//        else if(m[i-1]==')')
+//        {
+//            if(s.pop(l)==false)
+//            {
+//                match=false;
+//                break;
+//            }
+//            else if(l!='(')
+//            {
+//                match=false;
+//                break;
+//            }
+//        }
+//    }
+    if(s.isempty()==false)match=false;
+    if(!match)
+    {
+        cout<<"不匹配"<<endl;
+    }
+    else
+    {
+        cout<<"匹配"<<endl;
+    }
+}
+int main()
+{
+    int a=100;
+    char *ch;
+    ch=new char[a];
+    cin>>ch;
+    seqstack<char> l;
+    match(ch);
+    delete []ch;
+    return 0;
+}
